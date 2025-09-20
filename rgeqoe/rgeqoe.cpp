@@ -110,8 +110,8 @@ namespace orb {
         Vector3D V = r_dot*er + h/r*ef;
         Vector3D a_coriolis = -2*Vector3D::cross(omega_vect, V);
 
-        P = P + a_coriolis;
-        F = F + P +  a_centrifugal + a_coriolis;
+        P +=  a_coriolis;
+        F +=  a_centrifugal + a_coriolis;
 
         double Pr = Vector3D::dot(P, er);
         double Pf = Vector3D::dot(P, ef);

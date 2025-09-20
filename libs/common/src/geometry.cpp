@@ -76,5 +76,20 @@ namespace orb{
         return *this;
     }
 
+    Vector3D &Vector3D::operator/=(double scalar)
+    {
+        i /= scalar;
+        j /= scalar;
+        k /= scalar;
+        return *this;
+    }
+    Vector3D &Vector3D::operator+=(const Vector3D &other)
+    {
+        i += other.i;
+        j += other.j;
+        k += other.k;
+        return *this;
+    }
+
 
 }
