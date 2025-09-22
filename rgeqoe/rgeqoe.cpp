@@ -6,6 +6,7 @@
 #include "../libs/common/include/geometry.h"
 #include "../libs/common/include/algo.h"
 #include "../perturbations/perturbations.h"
+#include "../libs/common/include/common.h"
 
 extern "C"{
     #include "../libs/cspice/include/SpiceUsr.h"
@@ -27,7 +28,7 @@ namespace orb {
     RGEqOE::~RGEqOE() = default;
 
     void RGEqOE::compute(std::vector<double> tspan, rgeqoe s0, double dt, std::map<double, rgeqoe> &sprop) {
-
+        logger.info("Starting RGEqOE propagation from t = " + std::to_string(tspan[0]) + " to t = " + std::to_string(tspan[1]) + " with dt = " + std::to_string(dt));
         double t = tspan[0];
         rgeqoe s = s0;
 
@@ -38,6 +39,8 @@ namespace orb {
             t += dt;
             sprop[t] = s;
         }
+        logger.info("RGEqOE propagation completed.");
+
         
     }
 

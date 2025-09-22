@@ -66,13 +66,15 @@ namespace orb {
 
 
     // Logger class for orb project
-    enum class LogLevel {
+    enum class LogLevel
+    {
         INFO,
         WARNING,
         ERROR
     };
 
-    class Logger {
+    class Logger
+    {
     private:
         std::ofstream logFile;
         std::string filename;
@@ -90,10 +92,4 @@ namespace orb {
         void warning(const std::string &message);
         void error(const std::string &message);
     };
-
-
-
-
-
-
 }

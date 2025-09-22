@@ -15,6 +15,7 @@ namespace orb {
         public:
             RGEqOE();
             ~RGEqOE();
+            Logger logger{"rgeqoe.log"};
 
             std::unique_ptr<Gravity> gravity_model; // Gravity perturbation model
 
