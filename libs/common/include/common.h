@@ -2,7 +2,10 @@
 #include "geometry.h"
 #include <filesystem>
 #include <string>
+#include <ctime>
+#include <fstream>
 #include <iostream>
+#include <map>
 
 extern "C"
 {
@@ -38,6 +41,9 @@ namespace orb {
         Vector3D V;
     };
 
+    using timeoelem = std::map<double, oelem>;
+    using timeposvel = std::map<double, posvel>;
+    using timergeqoe = std::map<double, rgeqoe>;
 
 
     inline void load_kernels(const char* folderpath) {
@@ -57,6 +63,35 @@ namespace orb {
             }
         }
     }
+
+
+    // Logger class for orb project
+    enum class LogLevel {
+        INFO,
+        WARNING,
+        ERROR
+    };
+
+    class Logger {
+    private:
+        std::ofstream logFile;
+        std::string filename;
+
+        std::string currentDateTime();
+        std::string levelToString(LogLevel level);
+
+    public:
+        explicit Logger(const std::string &file);
+        ~Logger();
+
+        void log(LogLevel level, const std::string &message);
+
+        void info(const std::string &message);
+        void warning(const std::string &message);
+        void error(const std::string &message);
+    };
+
+
 
 
 

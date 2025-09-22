@@ -212,7 +212,7 @@ namespace orb {
 
     }
 
-    Vector3D thirdbody_accel(Vector3D R, double t) {
+    Vector3D sun_thirdbody_accel(Vector3D R, double t) {
         
         Vector3D accel;
 
@@ -239,6 +239,41 @@ namespace orb {
         Vector3D dUf = Rtb / std::pow(Rtb.norm(), 3);
 
         double mu = 132712440018.0;
+
+        // Compute acceleration
+        accel = -mu * (dUd + dUf);
+
+        return accel;
+    }
+
+    Vector3D moon_thirdbody_accel(Vector3D R, double t)
+    {
+
+        Vector3D accel;
+
+        double posvel[6];
+
+        const char *rotating = "ITRF93";
+
+        Vector3D R3b;
+
+        double target = 301;
+        double et = t;
+        const char *ref = "ITRF93";
+        const char *abcorr = "NONE";
+        int observer = 399;
+        double state[6];
+        double lt;
+
+        spkez_c(target, et, ref, abcorr, observer, state, &lt);
+
+        Vector3D Rtb(state[0], state[1], state[2]);
+
+        Vector3D dUd = (R - Rtb) / std::pow((R - Rtb).norm(), 3);
+
+        Vector3D dUf = Rtb / std::pow(Rtb.norm(), 3);
+
+        double mu = 4.9028000661637961E+03;
 
         // Compute acceleration
         accel = -mu * (dUd + dUf);

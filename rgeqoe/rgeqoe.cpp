@@ -94,8 +94,9 @@ namespace orb {
         double U = gravity.potential;
         Vector3D F = gravity.acceleration;
 
-        // TODO-> add third body perturbation
         Vector3D P(0.0,0.0,0.0);
+
+        P += moon_thirdbody_accel(R, t) + sun_thirdbody_accel(R,t);
 
 
         // Calculate perturbations and inertial accelerations

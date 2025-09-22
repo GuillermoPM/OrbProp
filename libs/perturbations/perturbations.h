@@ -54,5 +54,6 @@ namespace orb {
 
 
     };
-    Vector3D thirdbody_accel(Vector3D R, double t);
+    Vector3D sun_thirdbody_accel(Vector3D R, double t);
+    Vector3D moon_thirdbody_accel(Vector3D R, double t);
 } 
