@@ -21,12 +21,6 @@ cmake ..
 make
 ```
 
-## Usage
-
-
-## Documentation
-
-See the [Wiki](https://github.com/yourusername/OrbProp/wiki) for detailed usage and API reference.
 
 ## License
 
