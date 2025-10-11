@@ -6,6 +6,7 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include "../common/include/geometry.h"
 
 namespace orb {
 class GravitationalModelParser {
@@ -23,4 +24,29 @@ private:
     static std::string replaceDwithE(const std::string& s);
     void parse();
 };
+
+struct OrbitalInput {
+    double t0; // initial time
+    double tf; // final time
+    Vector3D R0; // initial position
+    Vector3D V0; // initial velocity
+};
+
+class OrbParser {
+    public:
+        // constructor
+        explicit OrbParser(const std::string& file);
+
+        void parse();
+
+        OrbitalInput getData() const;
+
+    private:
+        std::string file_;
+        OrbitalInput data_;
+
+        void parseLine(const std::string& line);
+};
+
+
 }

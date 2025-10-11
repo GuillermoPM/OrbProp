@@ -22,7 +22,16 @@ namespace orb {
         double q1;
         double q2;
     };
-    
+
+    struct geqoe
+    {
+        double nu; // generalized mean anomaly
+        double p1; 
+        double p2;
+        double varL;
+        double q1;
+        double q2;
+    };
 
     struct oelem
     {

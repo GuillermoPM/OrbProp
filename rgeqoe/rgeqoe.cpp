@@ -174,7 +174,9 @@ namespace orb {
         Vector3D ef = -1*ex*std::sin(L) + ey*std::cos(L);
 
         Vector3D R = er * r;
-        double U = 0;
+        
+        GravityResult gravity = gravity_model->get_gravity(R, t);
+        double U = gravity.potential;
         double Uc = -0.5 * std::pow(Vector3D::cross(omega_vect, R).norm(), 2);
         U += Uc;
 
@@ -200,8 +202,6 @@ namespace orb {
 
         double Uc = -0.5 * std::pow(Vector3D::cross(omega_vect, R).norm(), 2);
         double epsk = 0.5 * std::pow(v,2) - mu/r;
-
-        // TODO-> add gravity model
 
         GravityResult gravity = gravity_model->get_gravity(R, t);
         double U = gravity.potential;
