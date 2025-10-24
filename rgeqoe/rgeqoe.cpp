@@ -136,7 +136,6 @@ namespace orb {
 
         return dsdt;
 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        return dsdt;
     }
 
     posvel RGEqOE::rgeqoe2state(rgeqoe s, double t)
