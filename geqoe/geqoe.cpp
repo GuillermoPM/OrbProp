@@ -6,6 +6,7 @@
 #include "../libs/common/include/algo.h"
 #include "perturbations.h"
 #include "../libs/common/include/common.h"
+#include "../libs/formats/common.h"
 
 extern "C"{
     #include "../libs/cspice/include/SpiceUsr.h"
@@ -278,9 +279,11 @@ namespace orb {
     }
 
 
-    void GEqOE::init_geqoe() {
+    void GEqOE::init_geqoe(GravityConfig gravity_cfg){ 
 
-        gravity_model = std::make_unique<Gravity>("config/EGM96.txt", 40, 40);
+        std::string gravity_model_name = "config/" + gravity_cfg.model + ".txt";
+
+        gravity_model = std::make_unique<Gravity>(gravity_model_name, gravity_cfg.degree, gravity_cfg.order);
 
         mu = gravity_model->getMu(); // main body gravitational constant
     }

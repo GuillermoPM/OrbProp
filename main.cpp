@@ -7,15 +7,37 @@
 #include <fstream>
 #include "libs/formats/common.h"
 
+const std::string version = "0.1.0";
+
 int main(int argc, char* argv[])
 {
-
-    if (argc < 2)
+    std::string scenario_file ;
+    
+    for (int i = 1; i < argc; ++i)
     {
-        std::cerr << "Usage: ./orb <scenario.dat>\n";
-        return 1;
+        std::string arg = argv[i];
+        if (arg == "--help" || arg == "-h") {
+            std::cout << "Usage: " << argv[0] << " [options] <config_file.yaml>\n";
+            std::cout << "Options:\n";
+            std::cout << "  --help, -h       Show this help message and exit\n";
+            std::cout << "  --version, -v    Show version information and exit\n";
+            return 0;
+        }
+        if (arg == "--version" || arg == "-v") {
+            std::cout << "OrbProp version " << version << "\n";
+            return 0;
+        }
+        
+        if (arg =="--scenario") {
+            if (i + 1 < argc) {
+                scenario_file = argv[++i];
+                std::cout << "Using scenario file: " << scenario_file << "\n";
+            } else {
+                std::cerr << "Error: --scenario option requires a filename argument\n";
+                return 1;
+            }
+        }
     }
-
 
     orb::posvel rv0_test;
     orb::geqoe geqoe0, geodes;
@@ -24,10 +46,10 @@ int main(int argc, char* argv[])
 
     orb::OrbRecorder recorder;
 
-    orb::Config cfg = orb::parse_yaml_config(argv[1]);
+    orb::Config cfg = orb::parse_yaml_config(scenario_file);
 
     orb::GEqOE propagator;
-    propagator.init_geqoe();
+    propagator.init_geqoe(cfg.gravity);
 
     // Convert from orbital elements to position and velocity
 
@@ -40,9 +62,6 @@ int main(int argc, char* argv[])
     keplerelem.ta = cfg.init_cond.nu;
     orb::posvel rv0 = orb::oelem2state(keplerelem, propagator.get_mu());
 
-
-
-    std::string scenario_file = argv[1];
 
     // double t0 = 6.279457891829383e+08;
     // double tf = 6.362340691853830e+08;

@@ -46,4 +46,55 @@ class ConfigParser {
 
         static ConfigMap parse(const std::string& text);
 };
+
+
+// Scenario configuration parsing
+
+enum class DataType
+{
+    OELEM,
+    CARTESIAN
+};
+
+enum class Perturbation
+{
+    GRAV_HARMONICS,
+    THIRD_BODY
+};
+
+enum class ThirdBody
+{
+    MOON,
+    SUN
+};
+
+struct GravityConfig
+{
+    int degree = 0;
+    int order = 0;
+    std::string model;
+};
+
+struct InitCond
+{
+    double sma = 0.0;
+    double ecc = 0.0;
+    double inc = 0.0;
+    double raan = 0.0;
+    double argp = 0.0;
+    double nu = 0.0;
+};
+
+struct TimeSpan
+{
+    double start = 0.0;
+    double end = 0.0;
+    double step = 0.0;
+};
+
+struct ReferenceFrame
+{
+    std::string inertial;
+    std::string body_fixed;
+};
 }

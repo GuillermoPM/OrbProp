@@ -1,4 +1,5 @@
 #include "scenario_parser.h"
+#include "common.h"
 
 #include <yaml-cpp/yaml.h>
 #include <stdexcept>
@@ -79,6 +80,13 @@ namespace orb
             cfg.init_cond.raan = ic["raan"].as<double>();
             cfg.init_cond.argp = ic["argp"].as<double>();
             cfg.init_cond.nu = ic["nu"].as<double>();
+        }
+
+        if (root["reference_frame"])
+        {
+            auto rf = root["reference_frame"];
+            cfg.reference_frame.inertial = rf["inertial"].as<std::string>();
+            cfg.reference_frame.body_fixed = rf["body_fixed"].as<std::string>();
         }
 
         // TIME SPAN

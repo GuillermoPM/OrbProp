@@ -4,7 +4,7 @@
 #include "../libs/perturbations/perturbations.h"
 #include <vector>
 #include <map>
-
+#include "../libs/formats/common.h"
 
 namespace orb{
     geqoe operator+(const geqoe &a, const geqoe &b);
@@ -41,7 +41,7 @@ namespace orb{
             // @param rv0 Initial position and velocity vectors.
             // @param t Time at which the state is initialized.
             //
-            void init_geqoe();
+            void init_geqoe(GravityConfig gravity_cfg);
 
             //
             // @brief Updates the reference frame angular velocity with the given time.
