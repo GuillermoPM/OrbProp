@@ -217,7 +217,6 @@ namespace orb {
 
         double posvel[6];
 
-        const char *rotating = "ITRF93";
 
         Vector3D R3b;
 
@@ -251,8 +250,6 @@ namespace orb {
         Vector3D accel;
 
         double posvel[6];
-
-        const char *rotating = "ITRF93";
 
         Vector3D R3b;
 

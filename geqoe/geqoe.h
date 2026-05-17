@@ -65,6 +65,8 @@ namespace orb{
             //
             posvel geqoe2state(geqoe s, double t);
 
+            double get_mu() const { return mu; }
+
         private:
             double mu; // gravitational constant of the central body
 

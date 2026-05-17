@@ -3,6 +3,57 @@
 
 namespace orb {
 
+posvel oelem2state(const oelem &keplerelem, double mu) {
+    posvel rv;
+
+    double a = keplerelem.a;
+    double e = keplerelem.e;
+    double inc = keplerelem.inc;
+    double raan = keplerelem.raan;
+    double argp = keplerelem.argp;
+    double ta = keplerelem.ta;
+
+    double p = a * (1 - e * e);
+    double r = p / (1 + e * std::cos(ta));
+
+    // Position in perifocal coordinates
+    Vector3D R_perifocal(r * std::cos(ta), r * std::sin(ta), 0);
+
+    // Velocity in perifocal coordinates
+    Vector3D V_perifocal(-std::sqrt(mu / p) * std::sin(ta), std::sqrt(mu / p) * (e + std::cos(ta)), 0);
+
+    // Rotation matrix from perifocal to inertial frame
+    double cos_raan = std::cos(raan);
+    double sin_raan = std::sin(raan);
+    double cos_inc = std::cos(inc);
+    double sin_inc = std::sin(inc);
+    double cos_argp = std::cos(argp);
+    double sin_argp = std::sin(argp);
+
+    // Compute the rotation matrix
+    double R11 = cos_raan * cos_argp - sin_raan * sin_argp * cos_inc;
+    double R12 = -cos_raan * sin_argp - sin_raan * cos_argp * cos_inc;
+    double R13 = sin_raan * sin_inc;
+
+    double R21 = sin_raan * cos_argp + cos_raan * sin_argp * cos_inc;
+    double R22 = -sin_raan * sin_argp + cos_raan * cos_argp * cos_inc;
+    double R23 = -cos_raan * sin_inc;
+
+    double R31 = sin_argp * sin_inc;
+    double R32 = cos_argp * sin_inc;
+    double R33 = cos_inc;
+
+    // Transform position and velocity to inertial frame
+    rv.R.i = R11 * R_perifocal.i + R12 * R_perifocal.j + R13 * R_perifocal.k;
+    rv.R.j = R21 * R_perifocal.i + R22 * R_perifocal.j + R23 * R_perifocal.k;
+    rv.R.k = R31 * R_perifocal.i + R32 * R_perifocal.j + R33 * R_perifocal.k;
+
+    rv.V.i = R11 * V_perifocal.i + R12 * V_perifocal.j + R13 * V_perifocal.k;
+    rv.V.j = R21 * V_perifocal.i + R22 * V_perifocal.j + R23 * V_perifocal.k;
+    rv.V.k = R31 * V_perifocal.i + R32 * V_perifocal.j + R33 * V_perifocal.k;
+    return rv;
+}
+
 oelem Kepler_elements(Vector3D R, Vector3D V, double mu) {
 
     oelem keplerelem;

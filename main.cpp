@@ -1,5 +1,6 @@
 #include "rgeqoe/rgeqoe.h"
 #include "geqoe/geqoe.h"
+#include "libs/formats/scenario_parser.h"
 #include "libs/common/include/common.h"
 #include "libs/common/include/datarecorder.h"
 #include "libs/common/include/algo.h"
@@ -8,12 +9,6 @@
 
 int main(int argc, char* argv[])
 {
-    orb::posvel rv0, rv0_test;
-    orb::geqoe geqoe0, geodes;
-    std::map<double, orb::geqoe> sprop;
-    orb::timeposvel rvprop;
-
-    orb::OrbRecorder recorder;
 
     if (argc < 2)
     {
@@ -21,18 +16,42 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+
+    orb::posvel rv0_test;
+    orb::geqoe geqoe0, geodes;
+    std::map<double, orb::geqoe> sprop;
+    orb::timeposvel rvprop;
+
+    orb::OrbRecorder recorder;
+
+    orb::Config cfg = orb::parse_yaml_config(argv[1]);
+
+    orb::GEqOE propagator;
+    propagator.init_geqoe();
+
+    // Convert from orbital elements to position and velocity
+
+    orb::oelem keplerelem;
+    keplerelem.a = cfg.init_cond.sma;
+    keplerelem.e = cfg.init_cond.ecc;
+    keplerelem.inc = cfg.init_cond.inc;
+    keplerelem.raan = cfg.init_cond.raan;
+    keplerelem.argp = cfg.init_cond.argp;
+    keplerelem.ta = cfg.init_cond.nu;
+    orb::posvel rv0 = orb::oelem2state(keplerelem, propagator.get_mu());
+
+
+
     std::string scenario_file = argv[1];
 
-
-    rv0.R = orb::Vector3D(3.063755995412349e+03, 1.174417162099421e+04, 1.780952065585180e+03);
-    rv0.V = orb::Vector3D(1.701021806282415, -1.275844584985527, 5.290694112967110);
-    double t0 = 6.279457891829383e+08;
-    double tf = 6.362340691853830e+08;
+    // double t0 = 6.279457891829383e+08;
+    // double tf = 6.362340691853830e+08;
+    double t0 = cfg.time_span.start;
+    double tf = cfg.time_span.end;
 
 
     orb::load_kernels("libs/cspice/kernels");
-    orb::GEqOE propagator;
-    propagator.init_geqoe();
+
 
     geqoe0 = propagator.state2geqoe(rv0, t0);
     rv0_test = propagator.geqoe2state(geqoe0, t0);

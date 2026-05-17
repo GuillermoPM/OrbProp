@@ -75,6 +75,8 @@ inline double solve_kepler_newton(double p1, double p2, double varL, double K0, 
 
 oelem Kepler_elements(Vector3D R, Vector3D V, double mu);
 
+posvel oelem2state(const oelem &keplerelem, double mu);
+
 posvel inertial2rot(const double t, const posvel &rv);
 posvel rot2inertial(const double t, const posvel &rv);
 }
