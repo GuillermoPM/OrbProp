@@ -6,24 +6,31 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include <unordered_map>
 #include "../common/include/geometry.h"
 
 namespace orb {
-class GravitationalModelParser {
-public:
-    int Max_Degree;
-    double Radius;
-    double mu;
-    std::vector<std::vector<double>> data;
+    class GravitationalModelParser
+    {
+    public:
+        GravitationalModelParser(const std::string &filename);
 
-    explicit GravitationalModelParser(const std::string& file);
+        bool parse();
 
-private:
-    std::string file_;
+        int getMaxDegree() const;
+        double getRadius() const;
+        double getMu() const;
 
-    static std::string replaceDwithE(const std::string& s);
-    void parse();
-};
+        // Returns the parsed data as a 2D vector of doubles
+        const std::vector<std::vector<double>> &getData() const;
+
+    private:
+        std::string file;
+        int Max_Degree;
+        double Radius;
+        double mu;
+        std::vector<std::vector<double>> data;
+    };
 
 struct OrbitalInput {
     double t0; // initial time
@@ -32,21 +39,12 @@ struct OrbitalInput {
     Vector3D V0; // initial velocity
 };
 
-class OrbParser {
+
+class ConfigParser {
     public:
-        // constructor
-        explicit OrbParser(const std::string& file);
+        using SectionMap = std::unordered_map<std::string, double>;
+        using ConfigMap  = std::unordered_map<std::string, SectionMap>;
 
-        void parse();
-
-        OrbitalInput getData() const;
-
-    private:
-        std::string file_;
-        OrbitalInput data_;
-
-        void parseLine(const std::string& line);
+        static ConfigMap parse(const std::string& text);
 };
-
-
 }

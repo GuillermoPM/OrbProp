@@ -19,9 +19,7 @@ namespace orb{
     Vector3D Vector3D::unit_vector() const
     {
         double magnitude = norm();
-        // if (magnitude == 0) {
-        //     throw std::runtime_error("Zero vector cannot be normalized");
-        // }
+
         Vector3D uv;
         uv.i = i / magnitude;
         uv.j = j / magnitude;

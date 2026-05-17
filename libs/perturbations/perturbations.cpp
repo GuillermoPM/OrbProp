@@ -1,7 +1,7 @@
 #include "perturbations.h"
 #include <cmath>
 #include <filesystem>
-#include "../common/include/parsers.h"
+#include "../formats/common.h"
 #include <utility>
 
 
@@ -27,7 +27,6 @@ namespace orb {
     GravityResult Gravity::get_gravity(const Vector3D R, const double t)
     {
         return compute_cunningham(R, nHarmonics, mHarmonics) - compute_cunningham(R, 0, 0);
-        // return compute_cunningham(R, nHarmonics, mHarmonics);
     }
 
     
@@ -223,8 +222,8 @@ namespace orb {
         Vector3D R3b;
 
         double target = 10;
-        double et = t; 
-        const char *ref = "ITRF93";
+        double et = t;
+        const char *ref = "J2000";
         const char *abcorr = "NONE";
         int observer = 399;
         double state[6];
@@ -259,7 +258,7 @@ namespace orb {
 
         double target = 301;
         double et = t;
-        const char *ref = "ITRF93";
+        const char *ref = "J2000";
         const char *abcorr = "NONE";
         int observer = 399;
         double state[6];

@@ -1,51 +1,81 @@
 #include "common.h"
 
 namespace orb {
-std::string GravitationalModelParser::replaceDwithE(const std::string& s) {
-    std::string result = s;
-    std::replace(result.begin(), result.end(), 'D', 'E');
-    std::replace(result.begin(), result.end(), 'd', 'E');
-    return result;
-}
 
-GravitationalModelParser::GravitationalModelParser(const std::string& file) : file_(file) {
-    parse();
-}
-
-void GravitationalModelParser::parse() {
-    std::ifstream infile(file_);
-    if (!infile.is_open()) {
-        throw std::runtime_error("Cannot open file: " + file_);
+    GravitationalModelParser::GravitationalModelParser(const std::string &filename)
+        : file(filename), Max_Degree(0), Radius(0.0), mu(0.0)
+    {
+        parse();
     }
 
-    std::string line;
+    int GravitationalModelParser::getMaxDegree() const
+    {
+        return Max_Degree;
+    }
 
-    // First line: Max_Degree
-    if (!std::getline(infile, line))
-        throw std::runtime_error("File too short");
-    Max_Degree = std::stoi(line);
+    double GravitationalModelParser::getRadius() const
+    {
+        return Radius;
+    }
 
-    // Second line: Radius
-    if (!std::getline(infile, line))
-        throw std::runtime_error("File too short");
-    Radius = std::stod(replaceDwithE(line));
+    double GravitationalModelParser::getMu() const
+    {
+        return mu;
+    }
 
-    // Third line: mu
-    if (!std::getline(infile, line))
-        throw std::runtime_error("File too short");
-    mu = std::stod(replaceDwithE(line));
+    const std::vector<std::vector<double>> &GravitationalModelParser::getData() const
+    {
+        return data;
+    }
 
-    // Parse the rest as data
-    while (std::getline(infile, line)) {
-        if (line.empty()) continue;
-        std::istringstream iss(line);
-        std::vector<double> row;
-        std::string token;
-        while (iss >> token) {
-            row.push_back(std::stod(replaceDwithE(token)));
+    bool GravitationalModelParser::parse()
+    {
+        std::ifstream f(file);
+        if (!f.is_open())
+        {
+            throw std::runtime_error("Could not open file: " + file);
         }
-        if (!row.empty())
-            data.push_back(row);
+
+        auto clean_number = [](std::string s)
+        {
+            s.erase(std::remove_if(s.begin(), s.end(),
+                                   [](unsigned char c)
+                                   { return std::isspace(c); }),
+                    s.end());
+            std::replace(s.begin(), s.end(), 'D', 'E');
+            return s;
+        };
+        std::string line;
+
+        // Max degree
+        std::getline(f, line);
+        Max_Degree = std::stoi(clean_number(line));
+
+        // Radius
+        std::getline(f, line);
+        Radius = std::stod(clean_number(line));
+
+        // mu
+        std::getline(f, line);
+        mu = std::stod(clean_number(line));
+
+        // Remaining data
+        data.clear();
+        while (std::getline(f, line))
+        {
+            std::istringstream iss(line);
+            std::vector<double> row;
+            std::string value;
+            while (iss >> value)
+            {
+                row.push_back(std::stod(clean_number(value)));
+            }
+            if (!row.empty())
+            {
+                data.push_back(row);
+            }
+        }
+
+        return true;
     }
-}
 }

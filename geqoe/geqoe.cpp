@@ -4,7 +4,7 @@
 #include <vector>
 #include "../libs/common/include/geometry.h"
 #include "../libs/common/include/algo.h"
-#include "../perturbations/perturbations.h"
+#include "perturbations.h"
 #include "../libs/common/include/common.h"
 
 extern "C"{
@@ -86,18 +86,42 @@ namespace orb {
         double x = r * std::cos(L);
         double y = r * std::sin(L);
 
+        double xform[6][6], xform_inv[6][6];
+        sxform_c("J2000", "ITRF93", t, xform);
+        sxform_c("ITRF93", "J2000", t, xform_inv);
+
         Vector3D R = x * ex + y * ey;
 
-        GravityResult gravity = gravity_model->get_gravity(R, t);
+        Vector3D r_rot;
+        r_rot.i = xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k;
+        r_rot.j = xform[1][0] * R.i + xform[1][1] * R.j + xform[1][2] * R.k;
+        r_rot.k = xform[2][0] * R.i + xform[2][1] * R.j + xform[2][2] * R.k;
+
+        GravityResult gravity = gravity_model->get_gravity(r_rot, t);
 
         double U = gravity.potential;
-        Vector3D F = gravity.acceleration;
+        Vector3D F_rot = gravity.acceleration;
+
+        Vector3D F = Vector3D(
+            xform_inv[0][0] * F_rot.i + xform_inv[0][1] * F_rot.j + xform_inv[0][2] * F_rot.k,
+            xform_inv[1][0] * F_rot.i + xform_inv[1][1] * F_rot.j + xform_inv[1][2] * F_rot.k,
+            xform_inv[2][0] * F_rot.i + xform_inv[2][1] * F_rot.j + xform_inv[2][2] * F_rot.k
+        );
+
+        Vector3D omega_R = Vector3D(
+            xform[3][0] * R.i + xform[3][1] * R.j + xform[3][2] * R.k,
+            xform[4][0] * R.i + xform[4][1] * R.j + xform[4][2] * R.k,
+            xform[5][0] * R.i + xform[5][1] * R.j + xform[5][2] * R.k
+        );
 
         Vector3D P(0.0, 0.0, 0.0);
 
+        double Udot = Vector3D::dot(-1.0 * F_rot, omega_R);
+
         P += moon_thirdbody_accel(R, t) + sun_thirdbody_accel(R, t);
 
-         
+        F += P;
+                 
         double h = std::sqrt(std::pow(c, 2) - 2 * std::pow(r, 2) * U);
 
         Vector3D V = r_dot * er + h / r * ef;
@@ -110,9 +134,9 @@ namespace orb {
         float omegax = x / h * Fh;
         float omegay = y / h * Fh;
         float omegh = s.q1 * omegax - s.q2 * omegay;
-        float eps_dot = r_dot * Pr + h / r * Pf;
+        float eps_dot = Udot + r_dot * Pr + h / r * Pf;
 
-        dsdt.nu = -3.0 * std::pow(s.nu / mu, 2.0) * std::pow(mu, 1.0 / 3.0) * eps_dot;
+        dsdt.nu = -3.0 * std::pow( s.nu / std::pow(mu, 2.0), 1.0 / 3.0) * eps_dot;
         dsdt.p1 = s.p2 * ((h - c) / (r * r) - omegh) + (1.0 / c) * (x / a + 2.0 * s.p2) * (2.0 * U - r * Fr) + (1.0 / (c * c)) * (y * (r + rho) + r * r * s.p1) * eps_dot;
         dsdt.p2 = s.p1 * (omegh - (h - c) / (r * r)) - (1.0 / c) * (y / a + 2.0 * s.p1) * (2.0 * U - r * Fr) + (1.0 / (c * c)) * (x * (r + rho) + r * r * s.p2) * eps_dot;
         dsdt.varL = s.nu + (h - c) / (r * r) - omegh + (1.0 / c) * (1.0 / alpha + alpha * (1.0 - r / a)) * (2.0 * U - r * Fr) + r * r_dot * alpha / (mu * c) * (r + rho) * eps_dot;
@@ -157,7 +181,15 @@ namespace orb {
         Vector3D ef = -1 * ex * std::sin(L) + ey * std::cos(L);
 
         Vector3D R = er * r;
-        GravityResult gravity = gravity_model->get_gravity(R, t);
+
+        double xform[6][6];
+        sxform_c("J2000", "ITRF93", t, xform);
+        Vector3D R_rot;
+        R_rot = Vector3D(
+            xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k,
+            xform[1][0] * R.i + xform[1][1] * R.j + xform[1][2] * R.k,
+            xform[2][0] * R.i + xform[2][1] * R.j + xform[2][2] * R.k);
+        GravityResult gravity = gravity_model->get_gravity(R_rot, t);
         double U = gravity.potential;
 
         double h = std::sqrt(std::pow(c, 2) - 2 * std::pow(r, 2) * U);
@@ -182,7 +214,16 @@ namespace orb {
 
         double epsk = 0.5 * std::pow(v, 2) - mu / r;
 
-        GravityResult gravity = gravity_model->get_gravity(R, t);
+        double xform[6][6];
+        sxform_c("J2000", "ITRF93", t, xform);
+        Vector3D R_rot;
+        R_rot = Vector3D(
+            xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k,
+            xform[1][0] * R.i + xform[1][1] * R.j + xform[1][2] * R.k,
+            xform[2][0] * R.i + xform[2][1] * R.j + xform[2][2] * R.k
+        );
+
+        GravityResult gravity = gravity_model->get_gravity(R_rot, t);
         double U = gravity.potential;
 
         double eps = epsk + U;
@@ -237,12 +278,10 @@ namespace orb {
     }
 
 
-    posvel GEqOE::init_geqoe(posvel rv0, double t) {
+    void GEqOE::init_geqoe() {
 
         gravity_model = std::make_unique<Gravity>("config/EGM96.txt", 40, 40);
 
         mu = gravity_model->getMu(); // main body gravitational constant
-
-        return rv0;
     }
 }

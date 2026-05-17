@@ -5,7 +5,7 @@
 #include <vector>
 #include "../libs/common/include/geometry.h"
 #include "../libs/common/include/algo.h"
-#include "../perturbations/perturbations.h"
+#include "perturbations.h"
 #include "../libs/common/include/common.h"
 
 extern "C"{
@@ -127,7 +127,7 @@ namespace orb {
         float omegh = s.q1 *omegax - s.q2 *omegay;
         float eps_dot = r_dot * Pr + h / r * Pf;
 
-        dsdt.nu = -3.0 * std::pow(s.nu / mu, 2.0) * std::pow(mu, 1.0 / 3.0) * eps_dot;
+        dsdt.nu = -3.0 * std::pow( s.nu / std::pow(mu, 2.0), 1.0 / 3.0) * eps_dot;
         dsdt.p1 = s.p2 * ((h - c) / (r * r) - omegh) + (1.0 / c) * (x / a + 2.0 * s.p2) * (2.0 * U - r * Fr) + (1.0 / (c * c)) * (y * (r + rho) + r * r * s.p1) * eps_dot;
         dsdt.p2 = s.p1 * (omegh - (h - c) / (r * r)) - (1.0 / c) * (y / a + 2.0 * s.p1) * (2.0 * U - r * Fr) + (1.0 / (c * c)) * (x * (r + rho) + r * r * s.p2) * eps_dot;
         dsdt.varL = s.nu + (h - c) / (r * r) - omegh + (1.0 / c) * (1.0 / alpha + alpha * (1.0 - r / a)) * (2.0 * U - r * Fr) + r * r_dot * alpha / (mu * c) * (r + rho) * eps_dot;

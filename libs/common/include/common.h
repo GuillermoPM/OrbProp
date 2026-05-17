@@ -50,9 +50,21 @@ namespace orb {
         Vector3D V;
     };
 
+    // Configuration struct
+    struct Config
+    {
+        std::string gravity_model_file;
+        int gravity_max_degree;
+        int gravity_max_order;
+        int time_step;
+        bool third_body_perturbations;
+        bool solar_radiation_pressure;
+        
+    };
+
     using timeoelem = std::map<double, oelem>;
     using timeposvel = std::map<double, posvel>;
-    using timergeqoe = std::map<double, rgeqoe>;
+    using timegeqoe = std::map<double, geqoe>;
 
 
     inline void load_kernels(const char* folderpath) {

@@ -40,9 +40,8 @@ namespace orb{
             // @brief Initializes the GEqOE state from the given position and velocity vectors.
             // @param rv0 Initial position and velocity vectors.
             // @param t Time at which the state is initialized.
-            // @return The initialized GEqOE state.
             //
-            posvel init_geqoe(posvel rv0, double t);
+            void init_geqoe();
 
             //
             // @brief Updates the reference frame angular velocity with the given time.

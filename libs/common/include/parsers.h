@@ -14,6 +14,16 @@ namespace orb{
         using cfg_ = std::map<std::string, std::map<std::string, std::string>>;
     };
 
+    class ScenarioParser {
+    public:
+        ScenarioParser(const std::string& filename);
+        bool parse();
+        double getValue(const std::string& key) const;
+
+    private:
+        std::string file;
+    };
+
     class GravitationalModelParser {
     public:
         GravitationalModelParser(const std::string& filename);
