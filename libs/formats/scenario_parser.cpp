@@ -33,6 +33,8 @@ namespace orb
             return ThirdBody::MOON;
         if (s == "Sun")
             return ThirdBody::SUN;
+        if (s == "Earth")
+            return ThirdBody::EARTH;
 
         throw std::runtime_error("Unknown third body: " + s);
     }
@@ -57,6 +59,7 @@ namespace orb
         if (root["gravity"])
         {
             auto g = root["gravity"];
+            cfg.gravity.mainbody = g["mainbody"].as<std::string>();
             cfg.gravity.degree = g["degree"].as<int>();
             cfg.gravity.order = g["order"].as<int>();
             cfg.gravity.model = g["model"].as<std::string>();

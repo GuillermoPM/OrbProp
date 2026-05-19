@@ -50,51 +50,53 @@ class ConfigParser {
 
 // Scenario configuration parsing
 
-enum class DataType
+enum class DataType // types of input data
 {
     OELEM,
     CARTESIAN
 };
 
-enum class Perturbation
+enum class Perturbation // types of perturbations
 {
     GRAV_HARMONICS,
     THIRD_BODY
 };
 
-enum class ThirdBody
+enum class ThirdBody // celestial bodies for third-body perturbations
 {
     MOON,
-    SUN
+    SUN,
+    EARTH
 };
 
 struct GravityConfig
 {
-    int degree = 0;
-    int order = 0;
-    std::string model;
+    std::string mainbody; // main body for gravity model (e.g., Earth, Moon, Sun)
+    int degree = 0; // degree of gravity model
+    int order = 0; // order of gravity model
+    std::string model; // gravity model file (e.g., EGM96, EGM2008)
 };
 
 struct InitCond
 {
-    double sma = 0.0;
-    double ecc = 0.0;
-    double inc = 0.0;
-    double raan = 0.0;
-    double argp = 0.0;
-    double nu = 0.0;
+    double sma = 0.0; // semi-major axis
+    double ecc = 0.0; // eccentricity
+    double inc = 0.0; // inclination
+    double raan = 0.0; // right ascension of ascending node
+    double argp = 0.0; // argument of perigee
+    double nu = 0.0; // true anomaly
 };
 
 struct TimeSpan
 {
-    double start = 0.0;
-    double end = 0.0;
-    double step = 0.0;
+    double start = 0.0; // start time
+    double end = 0.0; // end time
+    double step = 0.0; // time step
 };
 
-struct ReferenceFrame
+struct ReferenceFrame // reference frame information
 {
-    std::string inertial;
-    std::string body_fixed;
+    std::string inertial; // inertial reference frame (e.g., J2000)
+    std::string body_fixed; // body-fixed reference frame (e.g., IAU_EARTH, IAU_MOON, IAU_SUN)
 };
 }

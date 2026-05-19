@@ -54,6 +54,10 @@ namespace orb {
 
 
     };
-    Vector3D sun_thirdbody_accel(Vector3D R, double t);
-    Vector3D moon_thirdbody_accel(Vector3D R, double t);
+
+    int map_ref_frame(const std::string &ref);
+    Vector3D sun_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body);
+    Vector3D moon_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body);
+    Vector3D earth_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body);
+
 } 

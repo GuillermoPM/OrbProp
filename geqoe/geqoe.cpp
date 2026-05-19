@@ -88,8 +88,8 @@ namespace orb {
         double y = r * std::sin(L);
 
         double xform[6][6], xform_inv[6][6];
-        sxform_c("J2000", "ITRF93", t, xform);
-        sxform_c("ITRF93", "J2000", t, xform_inv);
+        sxform_c(reference_frame_.inertial.c_str(), reference_frame_.body_fixed.c_str(), t, xform);
+        sxform_c(reference_frame_.body_fixed.c_str(), reference_frame_.inertial.c_str(), t, xform_inv);
 
         Vector3D R = x * ex + y * ey;
 
@@ -119,7 +119,18 @@ namespace orb {
 
         double Udot = Vector3D::dot(-1.0 * F_rot, omega_R);
 
-        P += moon_thirdbody_accel(R, t) + sun_thirdbody_accel(R, t);
+        for (const auto& body : third_body_) {
+            if (body == ThirdBody::MOON){
+                P += moon_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
+            }
+            else if (body == ThirdBody::SUN){
+                P += sun_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
+            }
+            else if (body == ThirdBody::EARTH) {
+                P += earth_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
+            }
+        }
+
 
         F += P;
                  
@@ -184,7 +195,7 @@ namespace orb {
         Vector3D R = er * r;
 
         double xform[6][6];
-        sxform_c("J2000", "ITRF93", t, xform);
+        sxform_c(reference_frame_.inertial.c_str(), reference_frame_.body_fixed.c_str(), t, xform);
         Vector3D R_rot;
         R_rot = Vector3D(
             xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k,
@@ -216,7 +227,7 @@ namespace orb {
         double epsk = 0.5 * std::pow(v, 2) - mu / r;
 
         double xform[6][6];
-        sxform_c("J2000", "ITRF93", t, xform);
+        sxform_c(reference_frame_.inertial.c_str(), reference_frame_.body_fixed.c_str(), t, xform);
         Vector3D R_rot;
         R_rot = Vector3D(
             xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k,
@@ -279,12 +290,15 @@ namespace orb {
     }
 
 
-    void GEqOE::init_geqoe(GravityConfig gravity_cfg){ 
+    void GEqOE::init_geqoe(GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies){ 
 
         std::string gravity_model_name = "config/" + gravity_cfg.model + ".txt";
 
         gravity_model = std::make_unique<Gravity>(gravity_model_name, gravity_cfg.degree, gravity_cfg.order);
 
+        gravity_cfg_ = gravity_cfg;
+        reference_frame_ = reference_frame;
+        third_body_ = third_bodies;
         mu = gravity_model->getMu(); // main body gravitational constant
     }
 }

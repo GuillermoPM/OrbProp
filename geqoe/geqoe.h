@@ -41,7 +41,7 @@ namespace orb{
             // @param rv0 Initial position and velocity vectors.
             // @param t Time at which the state is initialized.
             //
-            void init_geqoe(GravityConfig gravity_cfg);
+            void init_geqoe(GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies);
 
             //
             // @brief Updates the reference frame angular velocity with the given time.
@@ -66,9 +66,14 @@ namespace orb{
             posvel geqoe2state(geqoe s, double t);
 
             double get_mu() const { return mu; }
+            GravityConfig get_gravity_config() const { return gravity_cfg_; }
+            ReferenceFrame get_reference_frame() const { return reference_frame_; }
+            std::vector<ThirdBody> get_third_body() const { return third_body_; }
 
         private:
             double mu; // gravitational constant of the central body
-
+            GravityConfig gravity_cfg_; // gravity model configuration
+            ReferenceFrame reference_frame_; // reference frame information
+            std::vector<ThirdBody> third_body_; // third body for perturbations
     };
 }

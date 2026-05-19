@@ -5,6 +5,7 @@ perturbations:
   - third_body
 
 gravity:
+  mainbody: EARTH
   degree: 40
   order: 40
   model: EGM96

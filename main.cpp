@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
     orb::Config cfg = orb::parse_yaml_config(scenario_file);
 
     orb::GEqOE propagator;
-    propagator.init_geqoe(cfg.gravity);
+    propagator.init_geqoe(cfg.gravity, cfg.reference_frame, cfg.third_bodies);
 
     // Convert from orbital elements to position and velocity
 

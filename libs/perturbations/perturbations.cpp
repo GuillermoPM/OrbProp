@@ -211,7 +211,7 @@ namespace orb {
 
     }
 
-    Vector3D sun_thirdbody_accel(Vector3D R, double t) {
+    Vector3D sun_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body) {
         
         Vector3D accel;
 
@@ -222,9 +222,8 @@ namespace orb {
 
         double target = 10;
         double et = t;
-        const char *ref = "J2000";
         const char *abcorr = "NONE";
-        int observer = 399;
+        int observer = map_ref_frame(main_body);
         double state[6];
         double lt;
 
@@ -244,7 +243,7 @@ namespace orb {
         return accel;
     }
 
-    Vector3D moon_thirdbody_accel(Vector3D R, double t)
+    Vector3D moon_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body)
     {
 
         Vector3D accel;
@@ -255,9 +254,8 @@ namespace orb {
 
         double target = 301;
         double et = t;
-        const char *ref = "J2000";
         const char *abcorr = "NONE";
-        int observer = 399;
+        int observer = map_ref_frame(main_body);
         double state[6];
         double lt;
 
@@ -276,5 +274,50 @@ namespace orb {
 
         return accel;
     }
+
+    Vector3D earth_thirdbody_accel(const Vector3D R, const double t, const char *ref, const std::string &main_body)
+    {
+
+        Vector3D accel;
+
+        double posvel[6];
+
+        Vector3D R3b;
+
+        double target = 399;
+        double et = t;
+        const char *abcorr = "NONE";
+        int observer = map_ref_frame(main_body);
+        double state[6];
+        double lt;
+
+        spkez_c(target, et, ref, abcorr, observer, state, &lt);
+
+        Vector3D Rtb(state[0], state[1], state[2]);
+
+        Vector3D dUd = (R - Rtb) / std::pow((R - Rtb).norm(), 3);
+
+        Vector3D dUf = Rtb / std::pow(Rtb.norm(), 3);
+
+        double mu = 398600.4418;
+
+        // Compute acceleration
+        accel = -mu * (dUd + dUf);
+
+        return accel;
+
+
+    }
+
+    int map_ref_frame(const std::string &ref) {
+        if (ref == "EARTH") {
+            return 399; // J2000
+        } else if (ref == "MOON") {
+            return 301; // Moon
+        } else {
+            throw std::invalid_argument("Unsupported reference frame: " + std::string(ref));
+        }
+    }
+
 
 } // namespace orb
