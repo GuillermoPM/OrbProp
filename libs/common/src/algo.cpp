@@ -62,7 +62,7 @@ oelem Kepler_elements(Vector3D R, Vector3D V, double mu) {
 
     Vector3D H = Vector3D::cross(R,V);
     double h = H.norm();
-    Vector3D E = -1*R/r + 1/mu * Vector3D::cross(H,V);
+    Vector3D E = -1*R/r - 1/mu * Vector3D::cross(H,V);
     double e = E.norm();
 
     Vector3D u1;
@@ -105,6 +105,7 @@ oelem Kepler_elements(Vector3D R, Vector3D V, double mu) {
         u = keplerelem.ta;
     }
     keplerelem.ma = u - e * std::sin(u);
+    keplerelem.e = e;
 
     keplerelem.a = r / (2.0 - v * v * r / mu);
 

@@ -41,7 +41,7 @@ namespace orb{
             // @param rv0 Initial position and velocity vectors.
             // @param t Time at which the state is initialized.
             //
-            void init_geqoe(GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies);
+            void init_geqoe(std::vector<Perturbation> &perturbations, GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies);
 
             //
             // @brief Updates the reference frame angular velocity with the given time.

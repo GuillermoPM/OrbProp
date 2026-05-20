@@ -41,26 +41,30 @@ int main(int argc, char* argv[])
 
     orb::posvel rv0_test;
     orb::geqoe geqoe0, geodes;
+    orb::oelem oelem;
     std::map<double, orb::geqoe> sprop;
     orb::timeposvel rvprop;
+    orb::timeoelem oelemprop;
 
     orb::OrbRecorder recorder;
 
     orb::Config cfg = orb::parse_yaml_config(scenario_file);
 
     orb::GEqOE propagator;
-    propagator.init_geqoe(cfg.gravity, cfg.reference_frame, cfg.third_bodies);
+    propagator.init_geqoe(cfg.perturbations, cfg.gravity, cfg.reference_frame, cfg.third_bodies);
 
     // Convert from orbital elements to position and velocity
 
     orb::oelem keplerelem;
     keplerelem.a = cfg.init_cond.sma;
     keplerelem.e = cfg.init_cond.ecc;
-    keplerelem.inc = cfg.init_cond.inc;
-    keplerelem.raan = cfg.init_cond.raan;
-    keplerelem.argp = cfg.init_cond.argp;
-    keplerelem.ta = cfg.init_cond.nu;
+    keplerelem.inc = cfg.init_cond.inc*M_PI/180.0;
+    keplerelem.raan = cfg.init_cond.raan*M_PI/180.0;
+    keplerelem.argp = cfg.init_cond.argp*M_PI/180.0;
+    keplerelem.ta = cfg.init_cond.nu*M_PI/180.0;
     orb::posvel rv0 = orb::oelem2state(keplerelem, propagator.get_mu());
+
+    orb::oelem oelemtest = Kepler_elements(rv0.R, rv0.V, propagator.get_mu());
 
 
     // double t0 = 6.279457891829383e+08;
@@ -84,16 +88,15 @@ int main(int argc, char* argv[])
         geodes = s.second;
 
         rv = propagator.geqoe2state(geodes, t);
+        oelem = Kepler_elements(rv.R, rv.V, propagator.get_mu());
 
         rvprop[t] = rv;
+        oelemprop[t] = oelem;
     }
 
 
     recorder.record_cartesian(rvprop, "rvprop_output.txt");
-    // recorder.record_oelem(oelem_data, "oelem_output.txt");
-
-
-
+    recorder.record_oelem(oelemprop, "oelem_output.txt");
 
     return 0;
 }

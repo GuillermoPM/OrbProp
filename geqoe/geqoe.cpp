@@ -201,6 +201,7 @@ namespace orb {
             xform[0][0] * R.i + xform[0][1] * R.j + xform[0][2] * R.k,
             xform[1][0] * R.i + xform[1][1] * R.j + xform[1][2] * R.k,
             xform[2][0] * R.i + xform[2][1] * R.j + xform[2][2] * R.k);
+
         GravityResult gravity = gravity_model->get_gravity(R_rot, t);
         double U = gravity.potential;
 
@@ -289,16 +290,34 @@ namespace orb {
         return result;
     }
 
-
-    void GEqOE::init_geqoe(GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies){ 
+    void GEqOE::init_geqoe(std::vector<Perturbation> &perturbations, GravityConfig &gravity_cfg, ReferenceFrame &reference_frame, std::vector<ThirdBody> &third_bodies) {
 
         std::string gravity_model_name = "config/" + gravity_cfg.model + ".txt";
 
-        gravity_model = std::make_unique<Gravity>(gravity_model_name, gravity_cfg.degree, gravity_cfg.order);
+        int gravity_harmonics = 0;
+        int third_body_perturbation = 0;
+        for (const auto& perturbation : perturbations) {
+            if (perturbation == Perturbation::GRAV_HARMONICS) {
+                gravity_harmonics = 1;
+            }
+            else if (perturbation == Perturbation::THIRD_BODY) {
+                third_body_perturbation = 1;
+            }
+        }
+
+        int grav_degree = gravity_cfg.degree * gravity_harmonics;
+        int grav_order = gravity_cfg.order * gravity_harmonics;
+
+        gravity_model = std::make_unique<Gravity>(gravity_model_name, grav_degree, grav_order);
+
+        third_body_ = third_bodies;
+
+        if (third_body_perturbation == 0) {
+            third_body_.clear();
+        }
 
         gravity_cfg_ = gravity_cfg;
         reference_frame_ = reference_frame;
-        third_body_ = third_bodies;
         mu = gravity_model->getMu(); // main body gravitational constant
     }
 }
