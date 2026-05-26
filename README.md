@@ -18,7 +18,7 @@ git clone https://github.com/GuillermoPM/OrbProp.git
 cd OrbProp
 meson setup builddir
 cd builddir
-meson compile -C builddir
+meson compile
 ```
 
 
