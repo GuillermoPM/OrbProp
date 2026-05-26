@@ -16,9 +16,9 @@ Clone the repository and build using CMake:
 ```bash
 git clone https://github.com/GuillermoPM/OrbProp.git
 cd OrbProp
-mkdir build && cd build
-cmake ..
-make
+meson setup builddir
+cd builddir
+meson compile -C builddir
 ```
 
 
