@@ -6,7 +6,14 @@
 #include <map>
 #include "../libs/formats/common.h"
 
+#include <functional>
+#include <unordered_map>
+
+
 namespace orb{
+
+    using AccelFunc = std::function<Vector3D(
+        const Vector3D &, const double, const char *, const std::string &)>;
     geqoe operator+(const geqoe &a, const geqoe &b);
     geqoe operator*(double scalar, const geqoe &a);
 
@@ -75,5 +82,8 @@ namespace orb{
             GravityConfig gravity_cfg_; // gravity model configuration
             ReferenceFrame reference_frame_; // reference frame information
             std::vector<ThirdBody> third_body_; // third body for perturbations
+
+
+            std::unordered_map<ThirdBody, AccelFunc> get_third_body_accel_map();
     };
 }

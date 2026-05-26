@@ -119,18 +119,19 @@ namespace orb {
 
         double Udot = Vector3D::dot(-1.0 * F_rot, omega_R);
 
-        for (const auto& body : third_body_) {
-            if (body == ThirdBody::MOON){
-                P += moon_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
-            }
-            else if (body == ThirdBody::SUN){
-                P += sun_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
-            }
-            else if (body == ThirdBody::EARTH) {
-                P += earth_thirdbody_accel(r_rot, t, reference_frame_.inertial.c_str(), gravity_cfg_.mainbody);
+        auto accel_map = get_third_body_accel_map();
+
+        for (const auto &body : third_body_)
+        {
+            auto it = accel_map.find(body);
+            if (it != accel_map.end())
+            {
+                P += it->second(
+                    R, t,
+                    reference_frame_.inertial.c_str(),
+                    gravity_cfg_.mainbody);
             }
         }
-
 
         F += P;
                  
@@ -319,5 +320,14 @@ namespace orb {
         gravity_cfg_ = gravity_cfg;
         reference_frame_ = reference_frame;
         mu = gravity_model->getMu(); // main body gravitational constant
+    }
+
+    std::unordered_map<ThirdBody, AccelFunc> GEqOE::get_third_body_accel_map()
+    {
+        return {
+            {ThirdBody::MOON, moon_thirdbody_accel},
+            {ThirdBody::SUN, sun_thirdbody_accel},
+            {ThirdBody::EARTH, earth_thirdbody_accel}
+        };
     }
 }
