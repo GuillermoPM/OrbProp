@@ -1,0 +1,37 @@
+type: oelem   # oelem | cartesian
+
+perturbations: # list of perturbations to include in the simulation (grav_harmonics, third_body)
+ - grav_harmonics
+ - third_body
+
+gravity: # gravity model parameters
+  mainbody: MOON # mainbody for gravity model
+  degree: 25 # degree of the gravity model (0 for point mass)
+  order: 25 # order of the gravity model (0 for point mass)
+  model: LP150Q # gravity model to use (e.g., LP150Q, GRAIL, etc.)
+
+third_bodies: # list of third bodies to include in the simulation
+  - Earth
+  - Sun
+
+initial_conditions: # initial conditions for the simulation
+  sma: 1827.1
+  ecc: 0.014383191675362
+  inc: 0.8255
+  raan: -134.3796
+  argp: 321.0141
+  nu: 0.0
+
+reference_frame: # reference frame for the simulation
+  inertial: J2000
+  body_fixed: MOON_PA
+
+time_span: # time span for the simulation
+  start: 0.0
+  end: 3456000.0
+  step: 60.0
+
+integrator: # integrator settings
+  type: rkf78
+  rtol: 1e-10
+  atol: 1e-12
